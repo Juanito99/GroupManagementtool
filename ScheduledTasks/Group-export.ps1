@@ -13,7 +13,7 @@ AUTHOR: Ruben
 LASTEDIT: 2015-04-01
 REQUIRES: PowerShell Version 2, Active Directory Managment tools installed.
 NAME: Group-export.ps1
-KEYWORDS: ActiveDirectory, Groups, ManagedBy
+KEYWORDS: ActiveDirectory, Groups, ManagedBy, Regular Expressions
 REMARK: 
 This PS script comes with ABSOLUTELY NO WARRANTY; for details
 see gnu-gpl. This is free software, and you are welcome
@@ -26,7 +26,7 @@ to redistribute it under certain conditions; see gnu-gpl for details.
 	Set-StrictMode -Version Latest        
     $error.Clear()     
 	$outputFile = "D:\GroupManagementTool\Appdata\ADGroups.txt" #Change here to fit to your website location!
-    $domain = "nwtraders.com" #Change  here to your domain name!
+    $domain = "nwtraders" #Change  here to your domain netbios name!
 	#Below 2 lines are optional, in case some OUs or domains shall be skipped during export.
 	$ingoreOUs = "(.*OU=Administrative.*|CN=Builtin.*|CN=Users*)"
 	$ignoreStr = "(ROOTDomain\\)|(S-1-5-21.{38})"     

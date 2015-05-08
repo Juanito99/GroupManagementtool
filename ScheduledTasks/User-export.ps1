@@ -31,7 +31,7 @@ to redistribute it under certain conditions; see gnu-gpl for details.
 
 Import-Module ActiveDirectory
 
-$allusrs = Get-ADUser -Filter {(Surname -Like "*") -and  (enabled -eq $true)} -Properties sn, givenName, samAccountName -SearchScope Subtree | Select-Object sn, givenName, samAccountName
+$allusrs = Get-ADUser -Filter {(Surname -Like "*") -and  (enabled -eq $true)} -Properties sn, givenName, samAccountName, DistinguishedName -SearchScope Subtree | Select-Object sn, givenName, samAccountName, DistinguishedName	
 
 $filteredusrs = New-Object System.Collections.Generic.List[string]
 
