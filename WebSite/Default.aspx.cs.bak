@@ -1,0 +1,489 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+
+public partial class Default : System.Web.UI.Page
+{
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (!IsPostBack)
+        {           
+            
+            string appLanguage = Request.UserLanguages[0].Substring(0,2).ToUpper();            
+
+            var appText = new System.Collections.Generic.Dictionary<string, string>();
+            string appTextError = "";
+
+            bool foundLangFile = WbVarious.GetAppText(ref appText, ref appTextError, appLanguage);
+
+            #region Form initializing
+            string greetTxt, selectGroupTxt, groupMembersTxt, groupNotesTxt, memberDeleteTxt, memberAddTxt, saveChangesTxt;
+            string errorNotAuthTxt, errorNoGroupsMatchesTxt, errorNoGroupsFileTxt, memberSearchTxt, finishHandlingTxt;
+            string selectGroupHeaderTxt, memberHeaderTxt, introTxt;
+            
+            appText.TryGetValue("Greeting", out greetTxt);
+            appText.TryGetValue("Intro", out introTxt);
+            appText.TryGetValue("SelectedGroup", out selectGroupTxt);
+            appText.TryGetValue("SelectGroupHeader", out selectGroupHeaderTxt);
+            appText.TryGetValue("GroupMembers", out groupMembersTxt);
+            appText.TryGetValue("GroupNotes", out groupNotesTxt);
+            appText.TryGetValue("MemberHeader", out memberHeaderTxt);
+            appText.TryGetValue("MemberDelete", out memberDeleteTxt);
+            appText.TryGetValue("MemberAdd", out memberAddTxt);
+            appText.TryGetValue("MemberSearch", out memberSearchTxt);
+            appText.TryGetValue("SaveChanges", out saveChangesTxt);
+            appText.TryGetValue("ErrorNotAuth", out errorNotAuthTxt);
+            appText.TryGetValue("ErrorNoGroupsMatches", out errorNoGroupsMatchesTxt);
+            appText.TryGetValue("ErrorNoGroupsFile", out errorNoGroupsFileTxt);
+            appText.TryGetValue("FinishHandling", out finishHandlingTxt);
+            
+            lblGroupNotesTxt.Text = groupNotesTxt;
+            lblGreetingTxt.Text = greetTxt;
+            lblIntroTxt.Text = introTxt;
+            lblSelectGroupHeaderTxt.Text = "1. " + selectGroupHeaderTxt;
+            lblGroupMembersTxt.Text = groupMembersTxt;
+            lblSelectedGroupTxt.Text = selectGroupTxt;
+            lblMemberHeaderTxt.Text = "2. " + memberHeaderTxt;
+            lbtnAddGroupMembers.Text = "&rsaquo;&rsaquo;&nbsp;" + memberAddTxt;
+            lbtnRemoveGroupMembers.Text = "&rsaquo;&rsaquo;&nbsp;" + memberDeleteTxt;
+            lbtnUpdateGroupMembers.Text = "&rsaquo;&rsaquo;&nbsp;" + saveChangesTxt;
+            lblMemberSearchTxt.Text = memberSearchTxt;
+            lblFinishHandlingTxt.Text = "3. " + finishHandlingTxt;
+            lblAppFeedback.Text = "";
+            #endregion Form initializing
+
+            string authUsr = Request.LogonUserIdentity.Name;          
+
+            bool hasError = false;
+            
+            var authUsrMemberOf = new System.Collections.Generic.List<string>();
+            var aDGroupsStatic = new System.Collections.Generic.Dictionary<string, string>();
+
+            string authUsrfullName = "";
+
+            bool authUsrExist = AuthUsr_Load(authUsr, ref authUsrMemberOf, ref authUsrfullName);
+            bool aDGroupsExist = ADGroups_Load(ref aDGroupsStatic);
+
+            if (authUsrExist)
+            {
+                lblExistUsrFullName.Text = authUsrfullName + ',';
+                if (aDGroupsExist)
+                {                                      
+                    List<string> groupMatches = Match_Groups(authUsrMemberOf, aDGroupsStatic);
+                    if (groupMatches.Count > 0)
+                    {
+                        GroupMatches_Display(groupMatches);
+                        GroupMembers_Display();                        
+                    }
+                    else
+                    {
+                        lblAppFeedback.Text = errorNoGroupsMatchesTxt;
+                        hasError = true;
+                    }
+                }
+                else
+                {
+                    lblAppFeedback.Text = errorNoGroupsFileTxt;
+                    hasError = true;
+                } // end if(aDGroupExist)
+            }
+            else
+            {
+                lblAppFeedback.Text = errorNotAuthTxt;
+                hasError = true;
+            } // end if (authUsrExist)                                       
+
+            if (hasError)
+            {
+                Hide_Buttons();
+                lblAppFeedback.Attributes.Remove("class");
+                lblAppFeedback.Attributes.Add("class", "labelfeedbad");
+            }
+
+        } // end !IsPostback
+    } // end Page_Load          
+        
+    /// <summary>
+    /// Checking if logged on user exists and getting the full name and the groups she is memberof for further comparission.
+    /// </summary>
+    /// <param name="authUsrfullName"></param>
+    /// <param name="authUsr"></param>
+    /// <param name="authUsrMemberOf"></param>
+    protected bool AuthUsr_Load(string authUsr, ref List<string>authUsrMemberOf, ref string authUsrfullName)
+    {        
+        if (authUsr.Contains('\\')) 
+        {
+            string[] tmp = authUsr.Split('\\');
+            authUsr = tmp[1]; 
+        } 
+
+        lblExistUsrFullName.Text = "";
+        string objContentMsg = "";
+        try
+        {
+            
+            ADrwInfo ADrwinfoO = new ADrwInfo();
+            int retval;            
+            string objsearchfilter = "user";
+            ADobjInfo adobjui = new ADobjInfo();
+
+            adobjui.ADUserID = authUsr;
+            
+            var rtnObj = ADrwinfoO.RetObjValues(ref objContentMsg, out retval, objsearchfilter, adobjui);
+            if (retval == 0)
+            {
+                authUsrfullName = rtnObj.ADfirstName;
+                if (rtnObj.ADmemberOf.Count > 0)
+                {
+                    authUsrMemberOf.Add(authUsr);
+                    foreach (string itm in rtnObj.ADmemberOf)
+                    {
+                        string[] tmp = itm.Split(',');
+                        string lstitm = tmp[0].Replace("cn=", "").Replace("CN=", "");
+                        authUsrMemberOf.Add(lstitm);
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            objContentMsg = ex.Source + ' ' + ex.Message;
+            return false;
+        }         
+
+    } //end  AuthUsr_Load()
+    
+    /// <summary>
+    /// Getting all groups which have managedBy set out of a text file and storing it in a Dictionary.
+    /// </summary>
+    /// <param name="aDGroupsStatic">D</param>
+    protected bool ADGroups_Load(ref Dictionary<string, string> aDGroupsStatic)
+    {
+
+        int retval;
+        string objContentMsg = "";
+
+        FSGetFileContent fileCont = new FSGetFileContent();
+        fileCont.SourceFile = WbGetParams.getValue("ADGroupsFile");       
+        
+        List<string> rtnList = fileCont.rtnValues(out retval, ref objContentMsg);
+
+        if (retval == 0) 
+        {
+            foreach (var itm in rtnList)
+            {
+                string[] itms = itm.Split('#');
+                aDGroupsStatic.Add(itms[0], itms[1]);
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }      
+                   
+    } // end ADGroups_Load()
+
+    /// <summary>
+    /// Gets the groups where the user or his direct membership has write permissions.
+    /// </summary>
+    /// <param name="authUsrMemberOf"></param>
+    /// <param name="aDGroupsStatic"></param>
+    /// <returns> A list of matched groups.</returns>
+    protected List<string> Match_Groups(List<string> authUsrMemberOf, Dictionary<string, string> aDGroupsStatic)
+    {
+        var groupMatches = new System.Collections.Generic.List<string>();
+
+        foreach (var group in authUsrMemberOf)
+        {
+            string regpattern = "^" + group + "$";
+            var regexACE = new System.Text.RegularExpressions.Regex(regpattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            var qry = aDGroupsStatic.Where(itm => regexACE.IsMatch(itm.Value));
+
+            foreach (var ace in qry)
+            {
+                groupMatches.Add(ace.Key);
+            }
+        }
+
+        return groupMatches;
+
+    } //end Match_groups(List<string> ...)
+
+    /// <summary>
+    /// Displays all matched groups in a dropdown list.
+    /// </summary>
+    /// <param name="groupMatches">The list of matched groups.</param>
+    protected void GroupMatches_Display(List<string> groupMatches)
+    {
+        drpdAuthUsrRWGroups.Items.Clear();
+
+        foreach (string itm in groupMatches)
+        {            
+            string[] tmp = itm.Split(',');            
+            string sname = System.Text.RegularExpressions.Regex.Replace(tmp[0], "cn=", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            drpdAuthUsrRWGroups.Items.Add(new ListItem(sname, itm));
+        }
+
+    } // end GroupMatches_Disply(List<string> groupMatches)
+
+    /// <summary>
+    /// Gathers the members of the selected group and displays their clear name.
+    /// </summary>
+    protected void GroupMembers_Display()
+    {
+        ViewState["agGrpSelected"] = drpdAuthUsrRWGroups.SelectedValue;
+
+        string objContentMsg = "";
+        int retval;
+        int objContentNO;
+
+        var adgrpin = new ADgroupobjInfo();
+        adgrpin.DistinguishedName = drpdAuthUsrRWGroups.SelectedValue;
+
+        var adrw = new ADrwInfo();
+        var adgrpout = adrw.RetGroupValues(ref objContentMsg, out retval, out objContentNO, adgrpin);
+
+        if (retval == 0)
+        {
+            var sbMember = new System.Text.StringBuilder();
+            var memberDetails = new System.Collections.Generic.Dictionary<string, string>();
+
+            string objsearchfilter = "userdn";
+            foreach (var member in adgrpout.Member)
+            {
+                string objContentMsgMem = "";
+                int retvalMem;
+
+                var adusrin = new ADobjInfo();
+                adusrin.ADdistinguishedName = member;
+
+                var adrwi = new ADrwInfo();
+                var adusrout = adrwi.RetObjValues(ref objContentMsgMem, out retvalMem, objsearchfilter, adusrin);
+
+                if ((retvalMem == 0) && (!String.IsNullOrEmpty(adusrout.ADUserID)))
+                {
+                    string usrValue = "";
+                    if (String.IsNullOrEmpty(adusrout.ADfullName))
+                    {
+                        usrValue = adusrout.ADUserID;
+                    }
+                    else
+                    {
+                        usrValue = adusrout.ADfullName;
+                    }
+                    memberDetails.Add(adusrout.ADUserID, usrValue);
+                }
+            }
+
+            lstGroupMembers.Items.Clear();
+
+            
+
+            if (String.IsNullOrEmpty(adgrpout.Description))
+            {
+                lblADGroupsNotes.Text = "&nbsp;";
+            }
+            else
+            {
+                lblADGroupsNotes.Text = adgrpout.Description;
+            }           
+            
+        }
+        else
+        {
+            string foo = "bar";
+        }
+    } // end GroupMembers_Display()
+
+    /// <summary>
+    /// Calls the GroupMembers_display function on change of the group.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    protected void drpdAuthUsrRWGroups_TextChanged(object sender, EventArgs e)
+    {               
+        ViewState["agGrpSelected"] = drpdAuthUsrRWGroups.SelectedValue;
+        GroupMembers_Display();
+          
+    } // end drpdAuthUsrRWGroups_TextChanged
+
+    /// <summary>
+    /// Removing all selected group members from the listbox by clicking on that button.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    protected void lbtnRemoveGroupMembers_Click(object sender, EventArgs e)
+    {
+
+        Dictionary<int, string> members = new Dictionary<int, string>();
+
+        for (int i = 0; i < lstGroupMembers.Items.Count; i++)
+        {
+            members.Add(i, lstGroupMembers.Items[i].ToString() + '^' + lstGroupMembers.Items[i].Value.ToString());
+        }
+
+        int[] grpInd = lstGroupMembers.GetSelectedIndices();
+
+        foreach (int i in grpInd)
+            members.Remove(i);
+
+        lstGroupMembers.Items.Clear();
+
+        foreach (var itm in members)
+        {
+            string[] tmp;
+            tmp = itm.Value.Split('^');
+            lstGroupMembers.Items.Add(new ListItem(tmp[0], tmp[1]));
+        }
+        
+    } // end lbtnRemoveGroupMembers_Click
+
+    /// <summary>
+    /// Add the found member to the listbox by clicking on that button.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    protected void lbtnAddGroupMembers_Click(object sender, EventArgs e)
+    {
+        string tmpin = htxtMemberSearch.Value;
+        if (!String.IsNullOrEmpty(tmpin))
+        {
+            if (tmpin.Contains(';'))
+            {
+                string[] tmparr = tmpin.Split(';');
+                ListItem itm = new ListItem("(+) " + tmparr[1].Trim(), tmparr[0].Trim());
+                lstGroupMembers.Items.Insert(0, itm);
+            }
+        }        
+        txtMemberSearch.Text = "";
+        htxtMemberSearch.Value = "";
+        
+    } // end lbtnAddGroupMembers_Click
+    
+    /// <summary>
+    /// Updates the changes on the group in Active Directory
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    protected void lbtnUpdateGroupMembers_Click(object sender, EventArgs e)
+    {
+        
+        var memberDNs = new List<string>();        
+        string objContentMsg = "";
+        string objContentMsgGrp;
+        int retval;
+        int retvalGrp;
+        string objsearchfilter = "user";
+        var adrw = new ADrwInfo();
+        var adMemberIn = new ADobjInfo();
+
+        for (int i = 0; i < lstGroupMembers.Items.Count; i++)
+        {            
+            adMemberIn.ADUserID = lstGroupMembers.Items[i].Value.ToString();            
+            var adMemberOut = adrw.RetObjValues(ref objContentMsg, out retval, objsearchfilter, adMemberIn);
+
+            if (!String.IsNullOrEmpty(adMemberOut.ADdistinguishedName))
+            {
+                memberDNs.Add(adMemberOut.ADdistinguishedName);
+            }            
+        }       
+        
+        string adGrpUpdIn = ViewState["agGrpSelected"].ToString();
+        adrw.AddUsersToGroup(out objContentMsgGrp, out retvalGrp, adGrpUpdIn, memberDNs);
+
+        string appTextError = "", appLanguage = "";
+        var appText = new System.Collections.Generic.Dictionary<string, string>();
+        bool foundLangFile = WbVarious.GetAppText(ref appText, ref appTextError, appLanguage);
+ 
+        string errorExceptionTxt, operationFinishedtxt;
+        string feedback = "";
+
+        appText.TryGetValue("ErrorException", out errorExceptionTxt);
+        appText.TryGetValue("OperationFinished", out operationFinishedtxt);
+
+        if (retvalGrp != 0)
+        {
+            feedback = errorExceptionTxt;
+            lblAppFeedback.Attributes.Remove("class");
+            lblAppFeedback.Attributes.Add("class", "labelfeedbad");
+        }
+        else
+        {
+            feedback = operationFinishedtxt;
+            lblAppFeedback.Attributes.Remove("class");
+            lblAppFeedback.Attributes.Add("class", "labelfeedgood");
+        }
+
+        lblAppFeedback.Text = feedback;
+
+        Hide_Buttons();
+
+        if (WbGetParams.getBValue("WriteUsageLog"))
+        {
+            Update_UsageLog();
+        }                     
+
+    } // end lbtnUpdateGroupMembers_Click
+
+    /// <summary>
+    /// Updates the usage log file of this tool.
+    /// </summary>
+    protected void Update_UsageLog()
+    {
+        string authUser = Request.LogonUserIdentity.Name;
+        string timeStamp = DateTime.UtcNow.ToString();
+        string appVersion = WbGetParams.getValue("AppVersion");        
+        string appFeedback = lblAppFeedback.Text;
+
+        if (String.IsNullOrWhiteSpace(appFeedback))        
+        {
+            appFeedback = "No errors catched.";
+        }
+
+        string changedGroup = ViewState["agGrpSelected"].ToString();
+
+        var sb = new System.Text.StringBuilder();
+
+        for (int i = 0; i < lstGroupMembers.Items.Count; i++)
+        {
+            sb.Append(lstGroupMembers.Items[i].Value.ToString()).Append(';');
+        }
+
+        string groupMemberList = sb.ToString();
+
+        var logfile = new FSUsageLogWrite()
+        {
+            authUser = authUser,
+            timeStamp = timeStamp,
+            appVersion = appVersion,
+            appFeedback = appFeedback,
+            changedGroup = changedGroup,
+            groupMemberList = groupMemberList
+        };
+        
+        logfile.UpdateLog();
+    } // end Update_UsageLog()
+
+    /// <summary>
+    /// Hides the link buttons on the page in case of error or operation completion
+    /// </summary>
+    protected void Hide_Buttons()
+    {
+
+        lbtnAddGroupMembers.Visible = false;
+        lbtnRemoveGroupMembers.Visible = false;
+        lbtnUpdateGroupMembers.Visible = false;                       
+    } // end Hide_Buttons()
+
+ }

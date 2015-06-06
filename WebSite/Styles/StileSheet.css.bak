@@ -1,0 +1,315 @@
+﻿/* reset browser styles */
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp,small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1.2;
+}
+ol { 
+	padding-left: 1.4em;
+	list-style: decimal;
+}
+ul {
+	padding-left: 1.4em;
+	list-style: square;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+} 
+/* end reset browser styles */
+
+* {
+    font-family: Verdana, sans-serif;    
+}
+
+html {
+    height: 100%;                    
+}
+
+body {
+    width: 80%;
+    min-width: 1024px;
+    max-width: 1024px;
+    margin: 0 auto;   
+    height: 100%;   
+    
+    border-left: 1px solid #000;        
+    border-right: 1px solid #000;        
+    box-shadow: 0 0 5px 5px rgba(0,0,0,.5);    
+    
+    background: -webkit-linear-gradient(rgb(231,237,246), rgb(251, 251, 251));
+    background: linear-gradient(rgb(231,237,246), rgb(251, 251, 251));      
+}
+
+::selection {
+    color: rgb(255, 255, 255);
+    background-color: rgb(1, 56, 106);
+}
+
+a {
+    color: #004595;
+    font-size: 13px;  
+    text-decoration:none;  
+    display: block;    
+}
+
+a:hover {  
+    text-decoration: underline;
+    text-shadow: 1px 1px 1px rgb(206, 199, 198);        
+}
+
+section#top {        
+    height: 75px;    
+    background-color: rgb(251, 251, 251);     
+    background-image: url(../Images/signet-logo.png);
+    background-repeat: no-repeat;
+    background-position: center;        
+}
+
+
+header {
+    padding: 10px;    
+    height: 50px;           
+    background-color: #004595;
+    background-image: url(../Images/weblogo.png);
+    background-repeat: no-repeat;
+    background-position: left;      
+}
+
+    header h1 {
+        padding-left: 60px;
+        font-size: 24px;        
+        color: #FBFBFB;
+        text-align: left;
+        padding-top: 10px;
+    }
+
+    header h2 {
+        font-size: 14px;        
+        color: rgb(255,255,255);
+        text-align: right;        
+    }
+   
+    header a {
+        color: rgb(255,255,255);
+        font-size: 14px;  
+        text-decoration:none;  
+        text-align: right;   
+        display: inline;      
+    }
+
+    header a:hover {  
+        text-decoration: underline;
+        text-shadow: 1px 1px 1px rgb(206, 199, 198);        
+    }
+
+
+section#MainContent {       
+    padding-top: 20px;     
+    padding-left: 40px;
+    padding-right: 40px;
+    overflow-y: scroll;	
+    min-height: 600px;
+    max-height: 600px;
+    background-color: rgb(251, 251, 251);             
+    color: rgb(0,0,0);
+}
+
+    section#MainContent h1 {
+        font-size: 16px;
+        font-weight: normal;            
+        padding-top: 10px;
+        padding-bottom: 15px;    
+    }
+
+    section#MainContent h2 {
+        font-size: 14px;
+        font-weight: normal;            
+        padding-top: 10px;
+        padding-bottom: 10px;    
+    }
+
+    section#MainContent p {
+        font-size: 13px;                
+        padding-bottom: 10px;
+    }
+    
+    section#MainContent p.small {          
+        padding-bottom: 5px;
+    }
+
+    section#MainContent p.underline {          
+        border-bottom: dotted #000 1px;
+        color: rgb(206, 199, 198); 
+    }
+    
+
+.note {
+    padding: 10px;        
+    text-align: center;
+    border: solid 1px inset rgb(206, 199, 198);
+}
+
+.subform {
+    font-size: 13px;
+}
+
+.subform .label {
+	display: inline-block;
+	width: 200px;
+	vertical-align: top;
+	text-align: right;
+	margin-right: 10px;
+}
+
+.subform .labelNotes {
+	display: inline-block;
+	width: 480px;
+    border: inset 1px #FBFBFB;
+	vertical-align: top;
+	text-align: left;
+	margin-right: 10px;
+    background-color: #d6d6d6;
+    color: #000;    
+}
+
+.subform .radios {
+    margin-left: 210px;    
+}
+
+.subform .labelact {
+	display: inline-block;	
+	vertical-align: middle;
+	text-align: right;
+	margin-left: 10px;
+}
+
+.subform .labelcnt {	
+	text-align: center;
+    margin-left: 10px;	
+}
+
+.subform .labellft {	
+	text-align: left;
+    margin-left: 220px;	
+    width: 200px;
+    vertical-align: top;
+    display: inline-block;
+}
+
+.subform input[type="text"], .subform textarea {
+	border: inset 1px #000;
+	background-color: rgb(251, 251, 251);    
+	width: 480px;	
+	padding: 5px;
+}
+
+.subform input[type="text"]:focus, .subform textarea:focus {
+	background-color: white;
+	color:black;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0,1);
+}
+
+.selects {	
+    width: 480px;	
+    background-color: rgb(255, 255, 255);
+    color: rgb(0,0,0);
+    font-family: Consolas, 'Courier New';
+    font-size: 13px;
+}
+
+.selects .newgroups {
+    background-color: #00804e;
+    color: #FFFFFF;
+}
+
+.selects-min {	
+    width: 230px;	
+    font-family: Consolas, 'Courier New';
+    font-size: 13px;
+}
+
+
+.PleaseWait {
+    height: 48px;  
+    background-color: #346088; 
+    background-image: url(../Images/ajaxclock.gif);
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 1px inset #01386a;
+    text-align: center;
+    line-height: 48px;
+    margin: 5px;    
+    color: #FFFFFF;
+}
+
+.labelfeedgood {
+    display: inline-block;	    
+    height: 20px;  
+    width: 100%;    
+    border: inset 1px #26522b;     
+    background-color: #a2c2a5;
+    text-align: center;
+    line-height: 20px;
+    margin: 0 auto;    
+    color: #000;
+}
+
+.labelfeedbad {
+    display: inline-block;	    
+    height: 20px;  
+    width: 100%;     
+    border: inset 1px #ff000d;     
+    background-color: #ff666e;
+    text-align: center;
+    line-height: 20px;
+    margin: 5px;    
+    color: #000; 
+ }
+
+.tableabout {
+    width: 80%;
+    margin: auto;
+    border: solid 1px;
+    font-size: 12px;           
+}
+   .tableabout th {        
+        border: solid 1px rgb(0, 0, 0);        
+        color: rgb(251,251,251);                
+        background-color: rgb(0,69,149);
+        padding: 5px;     
+    }
+
+    .tableabout td {        
+        border: solid 1px rgb(0, 0, 0);        
+        padding: 5px;     
+    } 
+	
+    .tableabout tr:nth-of-type(even) {        
+        background-color: rgb(251,251,251);
+        color: rgb(0, 0, 0);
+    }
+
+    .tableabout tr:nth-of-type(odd) {                 
+        background-color: rgb(231,237,246);
+        color: rgb(0, 69, 149);   
+    }
+
+
+/* JQuery-UI */
+
+.ui-autocomplete { height: 100px; overflow-y: scroll; overflow-x: hidden;}
+.ui-autocomplete-loading {
+    background: white url("../Images/ui-anim_basic_16x16.gif") center center no-repeat;            
+}

@@ -1,0 +1,49 @@
+﻿<?xml version="1.0"?>
+<!--
+  For more information on how to configure your ASP.NET application, please visit
+  http://go.microsoft.com/fwlink/?LinkId=169433
+  -->
+<configuration>
+  <appSettings>        
+    <add key="UsageLogFile" value="App_Data/UsageLog.xml"/>    
+    <add key="ADGroupsFile" value="App_Data/ADGroups.txt"/>
+    <add key="ADUsersFile" value="App_Data/ADUsers.txt"/>
+    <add key="AppTextFile" value="App_Data/AppText.xml"/>
+    <add key="AppVersion" value="0.1 / (2015-05-01)"/>
+    <add key="AppLanguages" value="EN,DE"/>
+    <add key="ValidationSettings:UnobtrusiveValidationMode" value="WebForms" />
+    <add key="NotifyFromAddress" value="no_relpy.gmt@server.adswork.loc" />
+    <add key="NotifyFromName" value="GroupManagementTool-CrashNofifier" />
+    <add key="SendAdminBccNotification" value="false" />
+    <add key="NotifyAdminToAddress" value="admin@adswork.loc" />
+    <add key="NotifyAdminToName" value="Admin" />
+    <add key="SendMailOnError" value="false" />
+    <add key="WriteUsageLog" value="true" />
+    <add key="NotifyExchangeServer" value="exinflux" />
+  </appSettings>
+   <system.web>
+		<trace mostRecent="true" enabled="false" requestLimit="100" pageOutput="false" localOnly="true" />		
+		<compilation debug="false" targetFramework="4.5.1">
+			<assemblies>
+				<add assembly="System.Management.Automation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+				<add assembly="System.DirectoryServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
+				<add assembly="System.DirectoryServices.AccountManagement, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+			</assemblies>
+		</compilation>
+		<httpRuntime targetFramework="4.5.1" />		
+		
+		<customErrors mode="On" defaultRedirect="~/Errors/OtherErrors.aspx" redirectMode="ResponseRewrite" />
+        <identity impersonate="true" />
+		<authentication mode="Windows" />		
+	</system.web>
+	<system.webServer>
+        <validation validateIntegratedModeConfiguration="false" />		
+    </system.webServer>
+	<system.web.extensions>
+    <scripting>
+      <webServices>
+        <jsonSerialization maxJsonLength="50000000" />
+      </webServices>
+    </scripting>
+  </system.web.extensions>
+</configuration>

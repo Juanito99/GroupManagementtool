@@ -1,0 +1,47 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Frontend.master.cs" Inherits="MasterPages_Frontend" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>SIGIT - ...Tool (Dev)</title>    
+    <link href="../Styles/StileSheet.css" rel="stylesheet" type="text/css" />      
+    <link href="../Content/themes/jquery-ui-1.11.2.custom/jquery-ui.css" rel="stylesheet" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" type="image/vnd.microsoft.icon" href="../Images/favicon.ico" />
+    <asp:ContentPlaceHolder id="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server" class="subform">
+        <asp:ScriptManager ID="ScriptManager1" runat="server">
+            <Scripts>
+                 <asp:ScriptReference Name="jquery" />
+                 <asp:ScriptReference Name="jquery.ui.combined" />    
+                 <asp:ScriptReference Path="~/Scripts/WebForms/WebUIValidation.js" />
+                <asp:ScriptReference Path="~/Scripts/jstz-1.0.4.min.js" />        
+             </Scripts>
+        </asp:ScriptManager>        
+        <section id="top">            
+        </section>
+        <header>            
+            <h1>Group Management Tool</h1> 
+            <h2>
+                <asp:LinkButton ID="lbtnReload" runat="server" Onclick="lbtnReload_Click" CausesValidation="False">&rsaquo;&rsaquo;&nbsp;Reload</asp:LinkButton> 
+                &nbsp;|&nbsp;
+                <asp:LinkButton ID="lbtnEmail" runat="server" Onclick="lbtnEmail_Click" CausesValidation="False">&rsaquo;&rsaquo;&nbsp;E-Mail</asp:LinkButton> 
+            </h2>          
+        </header>
+        
+        <section id="MainContent">
+            <asp:ContentPlaceHolder id="cpMainContent" runat="server">
+        
+            </asp:ContentPlaceHolder>
+        </section>           
+                            
+        <asp:ContentPlaceHolder ID="cpClientScript" runat="server">            
+        </asp:ContentPlaceHolder>                     
+        
+    </form>
+</body>
+</html>
