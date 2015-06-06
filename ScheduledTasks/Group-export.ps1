@@ -29,7 +29,7 @@ to redistribute it under certain conditions; see gnu-gpl for details.
     $domain = "nwtraders" #Change  here to your domain netbios name!
 	#Below 2 lines are optional, in case some OUs or domains shall be skipped during export.
 	$ingoreOUs = "(.*OU=Administrative.*|CN=Builtin.*|CN=Users*)"
-	$ignoreStr = "(ROOTDomain\\)|(S-1-5-21.{38})"     
+	$ignoreStr = "(ROOTDomain\\)|(S-1-5-21.{38})" #netbios name of the domain where Exchange schema is installed    
 # -----------------------<\ Script Configuration />---------------------   
 
 Import-Module ActiveDirectory
